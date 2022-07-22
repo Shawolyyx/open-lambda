@@ -151,7 +151,7 @@ func LoadDefaults(olPath string) error {
 		Worker_url:        "localhost",
 		Worker_port:       "5000",
 		Registry:          registryDir,
-		Sandbox:           "sock",
+		Sandbox:           "graal",
 		Log_output:        true,
 		Pkgs_dir:          packagesDir,
 		Sandbox_config:    map[string]interface{}{},
@@ -160,8 +160,8 @@ func LoadDefaults(olPath string) error {
 		Mem_pool_mb:       mem_pool_mb,
 		Import_cache_tree: "",
 		Limits: LimitsConfig{
-			Procs:            10,
-			Mem_mb:           50,
+			Procs:            1024,
+			Mem_mb:           512,
 			CPU_percent:      100,
 			Max_runtime_default: 30,
 			Installer_mem_mb: Max(250, Min(500, mem_pool_mb/2)),
@@ -241,6 +241,8 @@ func checkConf() error {
 		if Conf.Features.Import_cache {
 			return fmt.Errorf("features.import_cache must be disabled for docker Sandbox")
 		}
+	} else if Conf.Sandbox == "graal" {
+		return nil
 	} else {
 		return fmt.Errorf("Unknown Sandbox type '%s'", Conf.Sandbox)
 	}
