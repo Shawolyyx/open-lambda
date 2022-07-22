@@ -62,6 +62,7 @@ func (cp *HandlerPuller) Pull(name string) (rt_type common.RuntimeType, targetDi
 			cp.prefix + "/" + name + ".tar.gz",
 			cp.prefix + "/" + name + ".py",
 			cp.prefix + "/" + name + ".bin",
+			cp.prefix + "/" + name + ".neutrino.so",
 		}
 
 		for i := 0; i < len(urls); i++ {
@@ -81,6 +82,7 @@ func (cp *HandlerPuller) Pull(name string) (rt_type common.RuntimeType, targetDi
 			filepath.Join(cp.prefix, name) + ".tar.gz",
 			filepath.Join(cp.prefix, name) + ".py",
 			filepath.Join(cp.prefix, name) + ".bin",
+			filepath.Join(cp.prefix, name) + ".neutrino.so",
 			filepath.Join(cp.prefix, name),
 		}
 
@@ -122,6 +124,8 @@ func (cp *HandlerPuller) pullLocalFile(src, lambdaName string) (rt_type common.R
 		if _, err := os.Stat(src + "/f.py"); !os.IsNotExist(err) {
 			rt_type = common.RT_PYTHON
 		} else if _, err := os.Stat(src + "/f.bin"); !os.IsNotExist(err) {
+			rt_type = common.RT_NATIVE
+		} else if _, err := os.Stat(src + "/f.neutrino.so"); !os.IsNotExist(err) {
 			rt_type = common.RT_NATIVE
 		} else {
 			return rt_type, "", fmt.Errorf("Unknown runtime type")
@@ -186,6 +190,15 @@ func (cp *HandlerPuller) pullLocalFile(src, lambdaName string) (rt_type common.R
 			rt_type = common.RT_NATIVE
 		} else {
 			return rt_type, "", fmt.Errorf("Found unknown runtime type or no code at all")
+		}
+	} else if strings.HasSuffix(stat.Name(), ".neutrino.so") {
+		log.Printf("Installing `%s` from neutrino.so file", src)
+
+		cmd := exec.Command("cp", src, filepath.Join(targetDir, "f.neutrino.so"))
+		rt_type = common.RT_NATIVE
+
+		if output, err := cmd.CombinedOutput(); err != nil {
+			return rt_type, "", fmt.Errorf("%s :: %s", err, string(output))
 		}
 	} else {
 		return rt_type, "", fmt.Errorf("lambda file %s not a .tar.gz or .py", src)
