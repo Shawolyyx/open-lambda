@@ -32,7 +32,7 @@ endif
 .PHONY: fmt check-fmt
 
 #all: ol imgs/lambda wasm-worker wasm-functions native-functions
-all: ol imgs/lambda wasm-functions native-functions
+all: ol imgs/lambda wasm-functions native-functions container-proxy
 
 wasm-worker:
 	cd wasm-worker && ${CARGO} build ${BUILD_FLAGS} ${WASM_WORKER_FLAGS}
