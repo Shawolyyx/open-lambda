@@ -8,7 +8,7 @@ fi
 sum=0.0
 num_iterations=0
 while read -r time_ms; do
-    echo $time_ms
+    #echo $time_ms
     sum=$(echo "$sum+$time_ms" | bc)
     num_iterations=$(( num_iterations + 1 ))
 done < $1
