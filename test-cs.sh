@@ -1,24 +1,21 @@
 #!/bin/bash
 
-if [[ -z $1 || -z $2 ]]; then
-    echo "Usage: $0 <sandbox_type> <num_iterations>"
+if [[ -z $1 ]]; then
+    echo "Usage: $0 <num_iterations>"
     exit 1
 fi
 
-sandbox_type=$1
-num_iterations=$2
+num_iterations=$1
 
 registry_dir=`pwd`/default-ol/registry
 neutrino_registry_dir=`pwd`/../neutrino/registry
+sandbox_type=$(cat `pwd`/default-ol/config.json | jq -r .sandbox)
 log_file=${sandbox_type}-$(date +%FT%T).log
 
 if [[ $sandbox_type == "graal" ]]; then
     file_ext=neutrino.so
-elif [[ $sandbox_type == "sock" || $sandbox_type == "docker" ]]; then
-    file_ext=py
 else
-    echo "Error: unknown sandbox type $sandbox_type"
-    exit 2
+    file_ext=py
 fi
 
 func=echo
